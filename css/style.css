@@ -1,4 +1,4 @@
-/* Rota 44 - Premium Automotive Garage Redesign
+/* Insulfim Gregório - Serviço de aplicação de película automotiva
    Dark theme with metallic accents
    Focus on premium feel, strong typography, and immersive experience */
 
@@ -1282,6 +1282,9 @@ a::after {
 .whatsapp-float svg {
     width: 24px;
     height: 24px;
+}
+
+.whatsapp-float svg path {
     fill: #fff;
 }
 

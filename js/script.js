@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const mensagem = document.getElementById('mensagem').value.trim();
 
             // Build WhatsApp message
-            let whatsappMessage = `Olá! Gostaria de conhecer os serviços da Rota 44 e solicitar um orçamento.`;
+            let whatsappMessage = `Olá! Gostaria de conhecer os serviços da Insulfim Gregório e solicitar um orçamento.`;
 
             if (nome) {
                 whatsappMessage += `%0a%0aNome: ${encodeURIComponent(nome)}`;
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 trigger: '.hero',
                 start: 'top top',
                 end: 'bottom top',
-                scrub: true
+                scrub: 0.5 // Smooth scrolling to reduce update frequency
             }
         });
     }
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Three.js scene for hero - Enhanced with automotive element
+    // Three.js scene for hero - Enhanced with automotive element (optimized)
     const threeContainer = document.getElementById('three-container');
     if (threeContainer) {
         // Initialize Three.js scene
@@ -280,23 +280,49 @@ document.addEventListener('DOMContentLoaded', function() {
         camera.position.z = 3.5;
         camera.position.y = 0.2;
 
-        // Animation loop with premium slow rotation
-        function animate() {
-            requestAnimationFrame(animate);
+        // Optimization: Only animate when hero is in viewport
+        let lastTime = 0;
+        const heroSection = document.querySelector('.hero');
+        let isHeroVisible = false;
 
-            // Slow, luxurious rotation
-            wheelGroup.rotation.y += 0.002;
-            wheelGroup.rotation.z += 0.001;
-
-            // Subtle breathing effect
-            const time = Date.now() * 0.001;
-            wheelGroup.scale.set(
-                1 + Math.sin(time) * 0.02,
-                1 + Math.sin(time) * 0.02,
-                1 + Math.sin(time) * 0.02
+        // Check if element is in viewport
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top >= -rect.height &&
+                rect.top <= window.innerHeight &&
+                rect.left >= -rect.width &&
+                rect.left <= window.innerWidth
             );
+        }
+
+        // Animation loop with optimized rendering
+        function animate(timestamp) {
+            // Limit to 30 FPS for performance
+            if (timestamp - lastTime < 33) { // ~30 FPS
+                requestAnimationFrame(animate);
+                return;
+            }
+            lastTime = timestamp;
+
+            // Only animate if hero section is visible
+            isHeroVisible = isInViewport(heroSection);
+            if (!isHeroVisible) {
+                requestAnimationFrame(animate);
+                return;
+            }
+
+            // Slow, luxurious rotation (reduced speed for less CPU usage)
+            wheelGroup.rotation.y += 0.001;
+            wheelGroup.rotation.z += 0.0005;
+
+            // Subtle breathing effect (reduced intensity)
+            const time = Date.now() * 0.0005;
+            const scale = 1 + Math.sin(time) * 0.01;
+            wheelGroup.scale.set(scale, scale, scale);
 
             renderer.render(scene, camera);
+            requestAnimationFrame(animate);
         }
         animate();
 
